@@ -10,6 +10,7 @@ Looked for another SMTP mail server. Went for [mailtrap.io](mailtrap.io). You ca
 This resulted in the manual test with a successful email  
 ![](media/20220713135939.png)  
 
+manual setup details:[here](manual_setup/README.md)  
 
 # Diagram
 

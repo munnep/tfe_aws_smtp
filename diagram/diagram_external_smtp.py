@@ -7,7 +7,7 @@ from diagrams.aws.database import RDSPostgresqlInstance
 from diagrams.aws.engagement import SimpleEmailServiceSes
 
 # Variables
-title = "VPC with 1 public subnet for the TFE server and\n 2 private subnet in different AZ for the PostgreSQL instance requirement.\n Using Amazon Simple Email Service"
+title = "VPC with 1 public subnet for the TFE server and\n 2 private subnet in different AZ for the PostgreSQL instance requirement.\n Using mailtrap.io as SMTP service"
 outformat = "png"
 filename = "diagram_external_smtp"
 direction = "TB"
@@ -21,10 +21,10 @@ with Diagram(
 ) as diag:
     # Non Clustered
     user = Server("user")
+    mailtrap = SimpleEmailServiceSes("mailtrap.io")
 
     # Cluster 
     with Cluster("aws"):
-        ses = SimpleEmailServiceSes("Simple Email Service")
         bucket_tfe = SimpleStorageServiceS3Bucket("TFE bucket")
         bucket_files = SimpleStorageServiceS3Bucket("TFE files")
         with Cluster("vpc"):
@@ -55,6 +55,6 @@ with Diagram(
     ec2_tfe_server >> [postgresql,
                        bucket_tfe, 
                        bucket_files,
-                       ses]
+                       mailtrap]
 
 diag

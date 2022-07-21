@@ -22,17 +22,13 @@ The Terraform code will do the following steps
 ## License
 Make sure you have a TFE license available for use
 
-Store this under the directory `airgap/license.rli`
+Store this under the directory `files/license.rli`
 
-## Airgap software
-Download the `.airgap` file using the information given to you in your setup email and place that file under the directory `./airgap`
+## Mailtrap.io
+Make sure you have a free account on [mailtrap.io](https://mailtrap.io) and you get the specifics of the SMTP settings from your mailtrap.io mailbox.   
 
-Store this for example under the directory `airgap/610.airgap`
-
-## Installer Bootstrap
-[Download the installer bootstrapper](https://install.terraform.io/airgap/latest.tar.gz)
-
-Store this under the directory `airgap/replicated.tar.gz`
+Example:    
+![](media/20220720115927.png)    
 
 ## AWS
 We will be using AWS. Make sure you have the following
@@ -47,39 +43,84 @@ You need to have valid TLS certificates that can be used with the DNS name you w
   
 The repo assumes you have no certificates and want to create them using Let's Encrypt and that your DNS domain is managed under AWS. 
 
-
-
 # How to
 
+- Clone the repository to your local machine
+```sh
+git clone https://github.com/munnep/tfe_aws_smtp.git
+```
+- Go to the directory
+```sh
+cd tfe_aws_smtp
+```
+- Set your AWS credentials
+```sh
+export AWS_ACCESS_KEY_ID=
+export AWS_SECRET_ACCESS_KEY=
+export AWS_SESSION_TOKEN=
+```
+- Store the files needed for the TFE Airgap installation under the `./airgap` directory, See the notes [here](./airgap/README.md)
+- create a file called `variables.auto.tfvars` with the following contents and your own values
+```hcl
+tag_prefix               = "patrick-tfe7"                             # TAG prefix for names to easily find your AWS resources
+region                   = "eu-north-1"                               # Region to create the environment
+vpc_cidr                 = "10.234.0.0/16"                            # subnet mask that can be used 
+ami                      = "ami-09f0506c9ef0fb473"                    # AMI of the Ubuntu image  
+rds_password             = "Password#1"                               # password used for the RDS environment
+filename_license         = "license.rli"                              # filename of your TFE license stored under ./airgap
+dns_hostname             = "patrick-tfe7"                             # DNS hostname for the TFE
+dns_zonename             = "bg.hashicorp-success.com"                 # DNS zone name to be used
+tfe_password             = "Password#1"                               # TFE password for the dashboard and encryption of the data
+certificate_email        = "patrick.munne@hashicorp.com"              # Your email address used by TLS certificate registration
+public_key               = "ssh-rsa AAAAB3Nza"                        # The public key for you to connect to the server over SSH
+```
+- Terraform initialize
+```sh
+terraform init
+```
+- Terraform plan
+```sh
+terraform plan
+```
+- Terraform apply
+```sh
+terraform apply
+```
+- Terraform output should create 33 resources and show you the public dns string you can use to connect to the TFE instance
+```sh
+Apply complete! Resources: 33 added, 0 changed, 0 destroyed.
 
+Outputs:
 
-
-Looked for another SMTP mail server. Went for [mailtrap.io](mailtrap.io). You can create a free account and this will allow you to send emails and review them online. 
-
-This resulted in the manual test with a successful email  
-![](media/20220713135939.png)  
-
-manual setup details:[here](manual_setup/README.md)  
-
-# Diagram
-
-![](diagram/diagram_external_smtp.png)  
-
-
-# Create Terraform organization
-
-- login to the TFE dashboard  
-![](media/20220720093503.png)    
-- Go to the TFE application to create a first admin user
-![](media/20220720093539.png)    
-- create a new organization  
-![](media/20220720093639.png)     
-- 
-
+ssh_tfe_server = "ssh ubuntu@patrick-tfe7.bg.hashicorp-success.com"
+ssh_tfe_server_ip = "ssh ubuntu@13.51.247.150"
+tfe_appplication = "https://patrick-tfe7.bg.hashicorp-success.com"
+tfe_dashboard = "https://patrick-tfe7.bg.hashicorp-success.com:8800"
+```
+- Connect to the TFE dashboard. This could take 5 minutes before fully functioning.  
+See the url for tfe_dashboard in your terraform output. 
+- Unlock the dashboard with password from your `variables.auto.tfvars`    
+![](media/20220711165147.png)    
+- Click on the open button to go to the TFE application page    
+![](media/20220711165253.png)  
+- Create the first account    
+![](media/20220711165340.png)
+- create your organization and workspaces    
+![](media/20220711165420.png)  
+- Go to the right to your admin page    
+![](media/20220720121319.png)   
+- Go to the left to you Administration - SMTP   
+![](media/20220720121357.png)    
+- Configure your SMTP settings and click on save settings     
+![](media/20220720121425.png)   
+- If you login to [mailtrap.io](https://mailtrap.io) you should see the welcome mail in your mailbox  
+![](media/20220720121542.png)    
+- When you are done you can destroy the entire environment  
+```sh
+terraform destroy
+```
 
 # TODO
-- [] Use and configure Simple Email Service
-
 
 # DONE
 - [x] Creating a diagram of what to build
@@ -100,3 +141,4 @@ manual setup details:[here](manual_setup/README.md)
 - [x] build network according to the diagram
 - [x] test it manually
 - [x] install TFE
+- [x] Use and configure Simple Email Service

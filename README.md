@@ -99,23 +99,23 @@ tfe_dashboard = "https://patrick-tfe7.bg.hashicorp-success.com:8800"
 ```
 - Connect to the TFE dashboard. This could take 5 minutes before fully functioning.  
 See the url for tfe_dashboard in your terraform output. 
-- Unlock the dashboard with password from your `variables.auto.tfvars`  
+- Unlock the dashboard with password from your `variables.auto.tfvars`    
 ![](media/20220711165147.png)    
-- Click on the open button to go to the TFE application page  
+- Click on the open button to go to the TFE application page    
 ![](media/20220711165253.png)  
-- Create the first account  
+- Create the first account    
 ![](media/20220711165340.png)
-- create your organization and workspaces  
+- create your organization and workspaces    
 ![](media/20220711165420.png)  
-- Go to the right to your admin page  
+- Go to the right to your admin page    
 ![](media/20220720121319.png)   
-- Go to the left to you Administration - SMTP 
+- Go to the left to you Administration - SMTP   
 ![](media/20220720121357.png)    
-- Configure your SMTP settings and click on save settings  
+- Configure your SMTP settings and click on save settings     
 ![](media/20220720121425.png)   
-- If you login to [mailtrap.io](https://mailtrap.io) you should see the welcome mail in your mailbox
+- If you login to [mailtrap.io](https://mailtrap.io) you should see the welcome mail in your mailbox  
 ![](media/20220720121542.png)    
-- When you are done you can destroy the entire environment
+- When you are done you can destroy the entire environment  
 ```sh
 terraform destroy
 ```

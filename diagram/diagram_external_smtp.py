@@ -20,8 +20,8 @@ with Diagram(
     outformat=outformat,
 ) as diag:
     # Non Clustered
-    user = Server("user")
-    mailtrap = SimpleEmailServiceSes("mailtrap.io")
+    user = Server("user") 
+    mailtrap = SimpleEmailServiceSes("mailtrap.io") 
 
     # Cluster 
     with Cluster("aws"):

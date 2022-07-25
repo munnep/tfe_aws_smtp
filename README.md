@@ -1,6 +1,6 @@
 # Terraform Enterprise installation with SMTP enabled
 
-With this repository you will be able to do a TFE (Terraform Enterprise) installation on AWS with external services for storage in the form of S3 and PostgreSQL. It will guide you through the steps of configuring SMTP service for TFE to send mail to you users. 
+With this repository you will be able to do a TFE (Terraform Enterprise) installation on AWS with external services for storage in the form of S3 and PostgreSQL. You will be able to start a script afterwards that will configure the user, organization and your SMTP settings. 
 
 The email service in this example will use [mailtrap.io](https://mailtrap.io). You can create a free account on there website and with that you get a SMTP server to which you can send and receive mail from any sender to any receiver. It will stay within mailtrap.io and never go to the outside world. 
 
@@ -12,6 +12,7 @@ The Terraform code will do the following steps
 - Create a VPC network with subnets, security groups, internet gateway
 - Create a RDS PostgreSQL to be used by TFE
 - Create an EC2 instance which will do a TFE instance installation
+- Generate a script on the TFE instance that you can run for the final configuration
 
 # Diagram
 
@@ -71,7 +72,9 @@ filename_license         = "license.rli"                              # filename
 dns_hostname             = "patrick-tfe7"                             # DNS hostname for the TFE
 dns_zonename             = "bg.hashicorp-success.com"                 # DNS zone name to be used
 tfe_password             = "Password#1"                               # TFE password for the dashboard and encryption of the data
-certificate_email        = "patrick.munne@hashicorp.com"              # Your email address used by TLS certificate registration
+smtp_username            = "eefa7dd19bc06f"                           # SMTP username you can find in mailtrap.io
+smtp_password            = "4e9wefca5ddsff"                           # SMTP password you can find in mailtrap.io
+certificate_email        = "patrick.munne@hashicorp.com"              # Your email address used by TLS certificate registration and send/receive for smtp mailtrap
 public_key               = "ssh-rsa AAAAB3Nza"                        # The public key for you to connect to the server over SSH
 ```
 - Terraform initialize
@@ -97,6 +100,16 @@ ssh_tfe_server_ip = "ssh ubuntu@13.51.247.150"
 tfe_appplication = "https://patrick-tfe7.bg.hashicorp-success.com"
 tfe_dashboard = "https://patrick-tfe7.bg.hashicorp-success.com:8800"
 ```
+
+## Automated step to configure the environment
+- Run the following script to configure a first user/organization/SMTP settings
+```sh
+ssh ubuntu@patrick-tfe7.bg.hashicorp-success.com bash /tmp/tfe_setup.sh
+```
+- If you login to [mailtrap.io](https://mailtrap.io) you should see the welcome mail in your mailbox  
+![](media/20220720121542.png)    
+
+## Manual steps for configuring the environment
 - Connect to the TFE dashboard. This could take 5 minutes before fully functioning.  
 See the url for tfe_dashboard in your terraform output. 
 - Unlock the dashboard with password from your `variables.auto.tfvars`    

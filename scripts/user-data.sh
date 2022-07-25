@@ -13,6 +13,7 @@ done
 
 # install monitoring tools
 apt-get update
+apt-get install -y jq
 apt-get install -y ctop net-tools sysstat
 
 # Set swappiness
@@ -158,9 +159,57 @@ cat > /etc/replicated.conf <<EOF
 }
 EOF
 
+cat > /tmp/tfe_setup.sh <<EOF
+#!/usr/bin/env bash
+
+# only really needed when not using valid certificates
+# echo -n | openssl s_client -connect ${dns_hostname}.${dns_zonename}:443 | openssl x509 > tfe_certificate.crt
+# sudo cp tfe_certificate.crt /usr/local/share/ca-certificates/
+# sudo update-ca-certificates
+
+# We have to wait for TFE be fully functioning before we can continue
+while true; do
+    if curl -I "https://${dns_hostname}.${dns_zonename}/admin" 2>&1 | grep -w "200\|301" ; 
+    then
+        echo "TFE is up and running"
+        echo "Will continue in 1 minutes with the final steps"
+        sleep 60
+        break
+    else
+        echo "TFE is not available yet. Please wait..."
+        sleep 60
+    fi
+done
+
+# get the admin token you can user to create the first user
+ADMIN_TOKEN=\`sudo /usr/local/bin/replicated admin --tty=0 retrieve-iact | tr -d '\r'\`
+
+# Create the first user called admin and get the token
+TOKEN=\`curl --header "Content-Type: application/json" --request POST --data '{"username": "admin", "email": "${certificate_email}", "password": "${tfe_password}"}' \ --url https://${dns_hostname}.${dns_zonename}/admin/initial-admin-user?token=\$ADMIN_TOKEN | jq '.token' | tr -d '"'\`
+
+# create the organization called test
+curl \
+  --header "Authorization: Bearer \$TOKEN" \
+  --header "Content-Type: application/vnd.api+json" \
+  --request POST \
+  --data '{"data": { "type": "organizations", "attributes": {"name": "test", "email": "${certificate_email}"}}}' \
+  https://${dns_hostname}.${dns_zonename}/api/v2/organizations
+
+# configure the smtp settings
+curl \
+  --header "Authorization: Bearer \$TOKEN" \
+  --header "Content-Type: application/vnd.api+json" \
+  --request PATCH \
+  --data '{"data": {"id": "smtp", "type": "smtp-settings", "attributes": {"enabled": true,"host": "smtp.mailtrap.io", "port": 587, "username": "${smtp_username}", "password": "${smtp_password}", "sender": "${certificate_email}", "test-email-address": "${certificate_email}", "auth": "login"}}}' \
+  https://${dns_hostname}.${dns_zonename}/api/v2/admin/smtp-settings
+EOF
+
 # Get the public IP of the instance
 PUBLIC_IP=`curl http://169.254.169.254/latest/meta-data/public-ipv4`
 
 pushd /var/tmp
 curl -o install.sh https://install.terraform.io/ptfe/stable
 bash ./install.sh no-proxy private-address=${tfe-private-ip} public-address=$PUBLIC_IP
+
+
+

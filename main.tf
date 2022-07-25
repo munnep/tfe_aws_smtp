@@ -130,7 +130,7 @@ resource "aws_security_group" "default-sg" {
 }
 
 resource "aws_s3_bucket" "tfe-bucket" {
-  bucket = "${var.tag_prefix}-bucket"
+  bucket        = "${var.tag_prefix}-bucket"
   force_destroy = true
 
   tags = {
@@ -139,7 +139,7 @@ resource "aws_s3_bucket" "tfe-bucket" {
 }
 
 resource "aws_s3_bucket" "tfe-bucket-software" {
-  bucket = "${var.tag_prefix}-software"
+  bucket        = "${var.tag_prefix}-software"
   force_destroy = true
 
   tags = {
@@ -344,17 +344,20 @@ resource "aws_instance" "tfe_server" {
   iam_instance_profile = aws_iam_instance_profile.profile.name
 
   user_data = templatefile("${path.module}/scripts/user-data.sh", {
-    tag_prefix       = var.tag_prefix
-    filename_license = var.filename_license
-    dns_hostname     = var.dns_hostname
-    tfe-private-ip   = cidrhost(cidrsubnet(var.vpc_cidr, 8, 1), 22)
-    tfe_password     = var.tfe_password
-    dns_zonename     = var.dns_zonename
-    pg_dbname        = aws_db_instance.default.name
-    pg_address       = aws_db_instance.default.address
-    rds_password     = var.rds_password
-    tfe_bucket       = "${var.tag_prefix}-bucket"
-    region           = var.region
+    tag_prefix        = var.tag_prefix
+    filename_license  = var.filename_license
+    dns_hostname      = var.dns_hostname
+    tfe-private-ip    = cidrhost(cidrsubnet(var.vpc_cidr, 8, 1), 22)
+    tfe_password      = var.tfe_password
+    dns_zonename      = var.dns_zonename
+    pg_dbname         = aws_db_instance.default.name
+    pg_address        = aws_db_instance.default.address
+    rds_password      = var.rds_password
+    tfe_bucket        = "${var.tag_prefix}-bucket"
+    region            = var.region
+    smtp_username     = var.smtp_username
+    smtp_password     = var.smtp_password
+    certificate_email = var.certificate_email
   })
 
   tags = {

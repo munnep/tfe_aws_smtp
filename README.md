@@ -106,8 +106,10 @@ tfe_dashboard = "https://patrick-tfe7.bg.hashicorp-success.com:8800"
 ```sh
 ssh ubuntu@patrick-tfe7.bg.hashicorp-success.com bash /tmp/tfe_setup.sh
 ```
+- If you login to [mailtrap.io](https://mailtrap.io) you should see the welcome mail in your mailbox  
+![](media/20220720121542.png)    
 
-## manual steps for configuring the environment
+## Manual steps for configuring the environment
 - Connect to the TFE dashboard. This could take 5 minutes before fully functioning.  
 See the url for tfe_dashboard in your terraform output. 
 - Unlock the dashboard with password from your `variables.auto.tfvars`    

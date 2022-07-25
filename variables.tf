@@ -18,6 +18,15 @@ variable "rds_password" {
   description = "password for the RDS postgres database user"
 }
 
+variable "smtp_username" {
+  description = "smtp username from mailtrap.io"
+}
+
+
+variable "smtp_password" {
+  description = "smtp password from mailtrap.io"
+}
+
 variable "public_key" {
   type        = string
   description = "public to use on the instances"

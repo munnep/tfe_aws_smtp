@@ -267,7 +267,7 @@ resource "aws_route53_record" "www" {
   zone_id = data.aws_route53_zone.selected.zone_id
   name    = var.dns_hostname
   type    = "A"
-  ttl     = "300"
+  ttl     = "2"
   records = [aws_eip.tfe-eip.public_ip]
   depends_on = [
     aws_eip.tfe-eip
